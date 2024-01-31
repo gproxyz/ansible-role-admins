@@ -5,6 +5,7 @@ name: test
   push:
     branches:
       - master
+      - main
 
 defaults:
   run:
