@@ -1,0 +1,86 @@
+---
+- name: Verify
+  hosts: all
+  become: yes
+  gather_facts: no
+  vars:
+    is_support_team: devops
+    admins_sudo_path: /etc/sudoers.d/
+    admins_group: admins
+    admins_ssh_dir: "{{ playbook_dir }}/admins_keys/"
+    admins:
+      - name: test.test
+        remove: true
+      - name: test.test2
+        remove: false
+    admins_extra:
+      - name: test.test3
+        remove: true
+  tasks:
+    - name: Get groups
+      ansible.builtin.getent:
+        database: group
+
+    - name: Assert that group exists
+      ansible.builtin.assert:
+        that:
+          - "admins_group in getent_group"
+
+    - name: Check sudo package is installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Assert that sudo package installed
+      ansible.builtin.assert:
+        that:
+          - "'sudo' in ansible_facts.packages"
+
+    - name: Check sudoers file
+      ansible.builtin.stat:
+        path: "{{ admins_sudo_path }}"
+      register: _sudo_path
+
+    - name: Assert that sudo path exists
+      ansible.builtin.assert:
+        that:
+          - _sudo_path.stat.exists
+          - _sudo_path.stat.isdir
+          - _sudo_path.stat.pw_name == 'root'
+          - _sudo_path.stat.gr_name == 'root'
+          - _sudo_path.stat.mode == '0750'
+
+    - name: Check sudo access for admin group
+      ansible.builtin.stat:
+        path: "{{ admins_sudo_path }}/{{ admins_group }}"
+      register: _sudo_file
+
+    - name: Assert that sudo file exists
+      ansible.builtin.assert:
+        that:
+          - _sudo_file.stat.exists
+          - _sudo_file.stat.isreg
+          - _sudo_file.stat.pw_name == 'root'
+          - _sudo_file.stat.gr_name == 'root'
+          - _sudo_file.stat.mode == '0440'
+
+    - name: Check access configure in sudo file
+      ansible.builtin.lineinfile:
+        dest: "{{ admins_sudo_path }}/{{ admins_group }}"
+        line: "%{{ admins_group }} ALL=(ALL) NOPASSWD: ALL"
+      check_mode: yes
+      register: _sudo_access
+      failed_when: >
+        ( _sudo_access.changed ) or
+        ( _sudo_access.exception is defined )
+
+    - name: Get users
+      ansible.builtin.getent:
+        database: passwd
+
+    - name: Check admins and auth keys
+      ansible.builtin.include_tasks: verify_users.yml
+      with_items:
+        - "{{ admins }}"
+        - "{{ admins_extra }}"
+      loop_control:
+        loop_var: user

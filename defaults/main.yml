@@ -1,0 +1,6 @@
+---
+admins_sudo_path: /etc/sudoers.d/
+admins_ssh_dir: admins_keys/
+admins_group: admins
+admins: []
+admins_extra: []

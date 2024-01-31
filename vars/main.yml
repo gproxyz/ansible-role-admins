@@ -1,0 +1,2 @@
+---
+admins_team: "{{ is_support_team }}"

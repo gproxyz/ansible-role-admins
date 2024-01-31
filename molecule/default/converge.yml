@@ -1,0 +1,20 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    is_support_team: devops
+    admins_ssh_dir: "{{ playbook_dir }}/admins_keys/"
+    admins:
+      - name: test.test
+        remove: true
+      - name: test.test2
+        remove: false
+    admins_extra:
+      - name: test.test3
+        remove: true
+  tasks:
+    - name: "Run role"
+      ansible.builtin.include_role:
+        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

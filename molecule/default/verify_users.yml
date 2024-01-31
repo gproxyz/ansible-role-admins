@@ -1,0 +1,14 @@
+---
+- name: Check user created
+  assert:
+    that: "user.name in getent_passwd"
+
+- name: Check if auth_key uploaded
+  lineinfile:
+    dest: "/home/{{ user.name }}/.ssh/authorized_keys"
+    line: "{{ lookup('file', admins_ssh_dir + '/' + user.name + '.pub') }}"
+  check_mode: yes
+  register: _admin_auth_key
+  failed_when: >
+    ( _admin_auth_key.changed ) or
+    ( _admin_auth_key.exception is defined )

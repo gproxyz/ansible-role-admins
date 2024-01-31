@@ -1,0 +1,5 @@
+---
+- name: GROUP | Ensure admin group exists
+  ansible.builtin.group:
+    name: "{{ admins_group }}"
+    state: present

@@ -1,0 +1,15 @@
+---
+- name: SUDO | Ensure sudo is installed and updated
+  ansible.builtin.package:
+    name: sudo
+    state: present
+
+- name: "SUDO | Ensure sudo access for admins group: {{ admins_group }}"
+  ansible.builtin.copy:
+    dest: "{{ admins_sudo_path }}/{{ admins_group }}"
+    mode: 0440
+    owner: root
+    group: root
+    content: |
+      %{{ admins_group }} ALL=(ALL) NOPASSWD: ALL
+    validate: /usr/sbin/visudo -cf %s

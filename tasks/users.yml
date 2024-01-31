@@ -1,0 +1,12 @@
+---
+- name: USERS | LOOP | create admins
+  ansible.builtin.include_tasks: "user.yml"
+  loop: "{{ admins }}"
+  loop_control:
+    loop_var: user
+
+- name: USERS | LOOP | create admins extra
+  ansible.builtin.include_tasks: "user.yml"
+  loop: "{{ admins_extra }}"
+  loop_control:
+    loop_var: user

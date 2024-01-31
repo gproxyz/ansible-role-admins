@@ -1,0 +1,45 @@
+---
+role_name_check: 1
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: almalinux8
+    image: almalinux/8-init
+    pre_build_image: true
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
+    privileged: true
+    security_opts:
+      - seccomp=unconfined
+    cgroupns_mode: private
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /run/lock
+      - /tmp
+    capabilities:
+      - SYS_ADMIN
+  - name: almalinux9
+    image: almalinux/9-init
+    pre_build_image: true
+    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
+    privileged: true
+    security_opts:
+      - seccomp=unconfined
+    cgroupns_mode: private
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /run/lock
+      - /tmp
+    capabilities:
+      - SYS_ADMIN
+provisioner:
+  name: ansible
+lint: |
+  set -e
+  yamllint -c ./.yamllint.yaml .
+  ansible-lint -c ./.ansible-lint .
+verifier:
+  name: ansible

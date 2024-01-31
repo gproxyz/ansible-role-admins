@@ -1,0 +1,30 @@
+---
+- name: "USER | Processing: {{ user.name }}"
+  ansible.builtin.user:
+    append: "{{ user.append | default('False') }}"
+    name: "{{ user.name }}"
+    state: "{{ user.state | default('present') }}"
+    comment: "Ansible managed"
+    password: "!"
+    update_password: "always"
+    password_lock: True
+    shell: "{{ user.shell | default(omit) }}"
+    group: "{{ admins_group }}"
+    groups: "{{ user.groups | default(omit) }}"
+    create_home: True
+    system: False
+    force: True
+    remove: "{{ user.remove | default(true) }}"
+
+- name: "USER | SSH keys: {{ user.name }}"
+  ansible.posix.authorized_key:
+    comment: "Ansible managed {{ user.name }}@{{ admins_group }}"
+    exclusive: yes
+    key: "{{ lookup('file', admins_ssh_dir + '/' + user.name + '.pub') }}"
+    follow: no
+    user: "{{ user.name }}"
+    manage_dir: True
+    key_options: "{{ user.ssh_key_options | default(omit) }}"
+    state: present
+  when:
+    - ( user.state | default('present') ) != 'absent'

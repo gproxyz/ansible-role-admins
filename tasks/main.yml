@@ -1,0 +1,41 @@
+---
+- name: MAIN | Assert to check list of admin users
+  ansible.builtin.assert:
+    that: admins | length > 1
+    fail_msg: Two or more admins must be set
+
+- name: MAIN | Assert admins and admins_extra lists are unicle
+  ansible.builtin.assert:
+    that: (admins + admins_extra) | map(attribute='name') | list | unique | length == (admins + admins_extra) | map(attribute='name') | list | length
+    fail_msg: admins and admins_extra must be used different username
+
+- name: MAIN | Update local facts
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - local
+
+- name: MAIN | Create group
+  ansible.builtin.import_tasks: group.yml
+  tags:
+    - group
+
+- name: MAIN | Add sudo privileges
+  ansible.builtin.import_tasks: sudo.yml
+  tags:
+    - sudo
+
+- name: MAIN | Create users
+  ansible.builtin.import_tasks: users.yml
+  tags: users
+
+- name: MAIN | Create facts directory on managed host
+  file:
+    path: "/etc/ansible/facts.d"
+    state: directory
+    recurse: yes
+
+- name: MAIN | Compare users from facts
+  ansible.builtin.include_tasks: state.yml
+  when:
+    - (admins + admins_extra) | list != (ansible_local['admins_'+admins_team] | default([])) | list

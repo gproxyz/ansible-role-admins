@@ -1,0 +1,8 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Install soft
+      ansible.builtin.shell:
+        cmd: yum install -y python3 iproute net-tools sudo openssh-server openssh-clients
