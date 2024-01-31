@@ -1,17 +1,15 @@
 ---
 galaxy_info:
   role_name: admin
-  namespace: RTLabs
+  namespace: rtlabs
   author: Chako Omarov
   description: Role for admin user managment
   license: MIT
-  min_ansible_version: 2.9
+  min_ansible_version: "2.13"
   platforms:
-    - name: almalinux
+    - name: AlmaLinux
       versions:
         - 8
-    - name: almalinux
-      versions:
         - 9
   galaxy_tags:
     - administrators

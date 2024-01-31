@@ -30,10 +30,10 @@
   tags: users
 
 - name: MAIN | Create facts directory on managed host
-  file:
+  ansible.builtin.file:
     path: "/etc/ansible/facts.d"
     state: directory
-    recurse: yes
+    recurse: true
 
 - name: MAIN | Compare users from facts
   ansible.builtin.include_tasks: state.yml

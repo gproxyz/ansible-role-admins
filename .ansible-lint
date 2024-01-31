@@ -1,13 +1,5 @@
-exclude_paths:
-  - ./molecule-venv/
-  - ./tests/roles/
-
-
+---
 skip_list:
   - 'yaml'
   - 'role-name'
 
-# skip_list:
-#   - '106'  # Role name does not match ``^[a-z][a-z0-9_]+$`` pattern
-#   - experimental  # all rules tagged as experimental
-#   - package-latest  # Package installs should not use latest

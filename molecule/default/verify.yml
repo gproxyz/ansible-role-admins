@@ -1,8 +1,8 @@
 ---
 - name: Verify
   hosts: all
-  become: yes
-  gather_facts: no
+  become: true
+  gather_facts: false
   vars:
     is_support_team: devops
     admins_sudo_path: /etc/sudoers.d/
@@ -67,7 +67,7 @@
       ansible.builtin.lineinfile:
         dest: "{{ admins_sudo_path }}/{{ admins_group }}"
         line: "%{{ admins_group }} ALL=(ALL) NOPASSWD: ALL"
-      check_mode: yes
+      check_mode: true
       register: _sudo_access
       failed_when: >
         ( _sudo_access.changed ) or

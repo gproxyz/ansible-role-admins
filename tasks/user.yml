@@ -7,23 +7,23 @@
     comment: "Ansible managed"
     password: "!"
     update_password: "always"
-    password_lock: True
+    password_lock: true
     shell: "{{ user.shell | default(omit) }}"
     group: "{{ admins_group }}"
     groups: "{{ user.groups | default(omit) }}"
-    create_home: True
-    system: False
-    force: True
+    create_home: true
+    system: false
+    force: true
     remove: "{{ user.remove | default(true) }}"
 
 - name: "USER | SSH keys: {{ user.name }}"
   ansible.posix.authorized_key:
     comment: "Ansible managed {{ user.name }}@{{ admins_group }}"
-    exclusive: yes
+    exclusive: true
     key: "{{ lookup('file', admins_ssh_dir + '/' + user.name + '.pub') }}"
-    follow: no
+    follow: false
     user: "{{ user.name }}"
-    manage_dir: True
+    manage_dir: true
     key_options: "{{ user.ssh_key_options | default(omit) }}"
     state: present
   when:

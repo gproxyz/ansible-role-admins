@@ -3,15 +3,16 @@
   ansible.builtin.user:
     name: "{{ user }}"
     state: absent
-    remove: "{{ ansible_local['admins_'+admins_team] | selectattr('name', 'equalto', user) | map(attribute='remove') | join | default(True)}}"
-  loop: "{{ (ansible_local['admins_'+admins_team] | default([]) | map(attribute='name')) | difference((admins + admins_extra) | map(attribute='name') | list) }}"
+    remove: "{{ ansible_local['admins_' + admins_team] | selectattr('name', 'equalto', user) | map(attribute='remove') | join | default(True) }}"
+  loop: "{{ (ansible_local['admins_' + admins_team] | default([]) | map(attribute='name')) | difference((admins + admins_extra) | map(attribute='name') | list) }}"
   loop_control:
     loop_var: user
 
 - name: "State | Set custom facts for admin users list"
   ansible.builtin.copy:
-    dest: "/etc/ansible/facts.d/admins_{{admins_team}}.fact"
+    dest: "/etc/ansible/facts.d/admins_{{ admins_team }}.fact"
     content: "{{ (admins + admins_extra) | to_nice_json }}"
+    mode: 0600
 
 - name: "State | Update local facts"
   ansible.builtin.setup:
