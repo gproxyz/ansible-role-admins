@@ -2,7 +2,7 @@
 
 This is a role to manage administrators on servers.
 
-## Supported OS
+## Tested OS
 
 - Almalinux 8
 - Almalinux 9
